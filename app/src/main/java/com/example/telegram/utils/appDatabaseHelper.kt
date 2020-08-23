@@ -1,5 +1,7 @@
 package com.example.telegram.utils
 
+import android.provider.ContactsContract
+import com.example.telegram.models.CommonModel
 import com.example.telegram.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -32,4 +34,30 @@ fun initFirebase() {
     USER = User()
     CURRENT_UID = AUTH.currentUser?.uid.toString()
     REF_STORAGE_ROOT = FirebaseStorage.getInstance().reference
+}
+
+fun initContacts() {
+    if (checkPermission(READ_CONTACTS)){
+        var arrayContacts = arrayListOf<CommonModel>()
+        var cursor = APP_ACTIVITY.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        cursor?.let {
+            while (it.moveToNext()){
+                val fullName = it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                val phone = it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                val newModel = CommonModel()
+                newModel.fullname = fullName
+                newModel.phone = phone.replace(Regex("[\\s, -]"), "")
+                arrayContacts.add(newModel)
+            }
+        }
+        cursor?.close()
+    }
 }
