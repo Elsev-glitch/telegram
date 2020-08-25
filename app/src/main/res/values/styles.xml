@@ -24,7 +24,7 @@
         <item name="material_drawer_legacy_style">false</item> <!-- Enables legacy Material 1 style -->
     </style>
 
-    <style name="SettingsButtons">
+    <style name="settingsButtons">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/vertical_margin</item>

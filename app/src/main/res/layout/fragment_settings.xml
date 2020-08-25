@@ -72,7 +72,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_text_account"
-        style="@style/SettingsButtons">
+        style="@style/settingsButtons">
 
         <TextView
             android:id="@+id/settings_phone_number"
@@ -99,7 +99,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_change_btn_number_phone"
-        style="@style/SettingsButtons">
+        style="@style/settingsButtons">
 
         <TextView
             android:id="@+id/settings_username"
@@ -126,7 +126,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_change_btn_username"
-        style="@style/SettingsButtons">
+        style="@style/settingsButtons">
 
         <TextView
             android:id="@+id/settings_bio"
