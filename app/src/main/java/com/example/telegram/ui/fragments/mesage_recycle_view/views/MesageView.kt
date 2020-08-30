@@ -1,0 +1,18 @@
+package com.example.telegram.ui.fragments.mesage_recycle_view.views
+
+interface MesageView {
+    val id: String
+    val from: String
+    val timeStamp: String
+    val fileUrl: String
+    val text: String
+
+    companion object{
+        val MESAGE_IMAGE: Int
+            get() = 0
+        val MESAGE_TEXT: Int
+            get() = 1
+    }
+
+    fun getTypeView(): Int
+}

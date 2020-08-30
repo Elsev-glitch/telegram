@@ -16,6 +16,7 @@ import com.example.telegram.database.*
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.ui.fragments.BaseFragment
+import com.example.telegram.ui.fragments.mesage_recycle_view.views.AppViewFactory
 import com.example.telegram.utils.*
 import com.google.firebase.database.DatabaseReference
 import com.theartofdev.edmodo.cropper.CropImage
@@ -121,11 +122,11 @@ class SingleChatFragment(private val contact: CommonModel) :
 
             // Добавление элементов в зависимости от состояния положения списка
             if (mSmoothScrollToPosition) { // Проверка на необходимость опуститься вниз списка
-                mAdapter.addItemToBotom(mesage) {
+                mAdapter.addItemToBotom(AppViewFactory.getView(mesage)) {
                     mRecycleView.smoothScrollToPosition(mAdapter.itemCount) // Опускается в нижний элемент списка
                 }
             } else {
-                mAdapter.addItemToTop(mesage) {
+                mAdapter.addItemToTop(AppViewFactory.getView(mesage)) {
                     mSwipeRefreshLayout.isRefreshing = false
                 }
             }
