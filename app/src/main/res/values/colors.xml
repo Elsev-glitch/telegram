@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#0088CC</color>
+    <color name="colorWish">#CAFFFB</color>
     <color name="colorPrimaryDark">#ED0088CC</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="colorAccentDark">#EAE7E7</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorGreen">#9ECC98</color>
     <color name="colorGrey">#9E9797</color>
 
     <!-- Material DEFAULT colors -->

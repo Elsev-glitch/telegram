@@ -17,8 +17,9 @@ open class BaseChangeFragment(layout:Int) : Fragment(layout) {
         hideKeyboard()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+        hideKeyboard()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

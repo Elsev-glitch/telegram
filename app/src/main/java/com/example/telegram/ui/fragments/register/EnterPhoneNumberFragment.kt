@@ -1,8 +1,8 @@
-package com.example.telegram.ui.fragments
+package com.example.telegram.ui.fragments.register
 
 import androidx.fragment.app.Fragment
 import com.example.telegram.R
-import com.example.telegram.activities.RegisterActivity
+import com.example.telegram.utils.APP_ACTIVITY
 import com.example.telegram.utils.replaceFragment
 import com.example.telegram.utils.showToast
 import com.google.firebase.FirebaseException
@@ -32,7 +32,12 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
             }
 
             override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
-                replaceFragment(EnterCodeFragment(mPhoneNumber, id))
+                replaceFragment(
+                    EnterCodeFragment(
+                        mPhoneNumber,
+                        id
+                    )
+                )
             }
         }
         register_btn_next.setOnClickListener { sendCode() }
@@ -52,7 +57,7 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
             mPhoneNumber,
             60,
             TimeUnit.SECONDS,
-            activity as RegisterActivity,
+            APP_ACTIVITY,
             mCallback
         )
     }

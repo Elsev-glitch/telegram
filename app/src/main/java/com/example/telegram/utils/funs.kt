@@ -1,50 +1,45 @@
 package com.example.telegram.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.ContactsContract
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.telegram.MainActivity
 import com.example.telegram.R
-import com.example.telegram.models.User
+import com.example.telegram.database.*
+import com.example.telegram.models.CommonModel
+import com.example.telegram.models.UserModel
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.activity_main.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun showToast(message: String) {
     Toast.makeText(APP_ACTIVITY, message, Toast.LENGTH_SHORT).show()
 }
 
-fun AppCompatActivity.replaceActivity(activity: Activity) {
-    val intent = Intent(this, activity::class.java)
-    startActivity(intent)
-    this.finish()
+fun restartActivity() {
+    val intent = Intent(APP_ACTIVITY, MainActivity::class.java)
+    APP_ACTIVITY.startActivity(intent)
+    APP_ACTIVITY.finish()
 }
 
-fun AppCompatActivity.replaceFragment(fragment: Fragment, addStack: Boolean = true) {
+fun replaceFragment(fragment: Fragment, addStack: Boolean = true) {
     if (addStack) {
-        supportFragmentManager.beginTransaction()
+        APP_ACTIVITY.supportFragmentManager.beginTransaction()
             .addToBackStack(null)
-            .replace(R.id.dataContainer, fragment)
+            .replace(R.id.data_container, fragment)
             .commit()
     } else {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.dataContainer, fragment)
+        APP_ACTIVITY.supportFragmentManager.beginTransaction()
+            .replace(R.id.data_container, fragment)
             .commit()
     }
 
-}
-
-fun Fragment.replaceFragment(fragment: Fragment) {
-    this.fragmentManager?.beginTransaction()
-        ?.addToBackStack(null)
-        ?.replace(R.id.dataContainer, fragment)
-        ?.commit()
 }
 
 fun hideKeyboard() {
@@ -62,7 +57,9 @@ fun ImageView.downloadAndSetImage(url: String) {
 }
 
 inline fun putUrlToDatabase(url: String, crossinline function: () -> Unit) {
-    REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
+    REF_DATABASE_ROOT.child(NODE_USERS).child(
+        CURRENT_UID
+    )
         .child(CHILD_PHOTOURL)
         .setValue(url)
         .addOnSuccessListener { function() }
@@ -75,19 +72,57 @@ inline fun getUrlFromStorage(path: StorageReference, crossinline function: (url:
         .addOnFailureListener { showToast(it.message.toString()) }
 }
 
-inline fun putImageToStorage(uri: Uri, path: StorageReference, crossinline function: () -> Unit) {
+inline fun putFileToStorage(uri: Uri, path: StorageReference, crossinline function: () -> Unit) {
     path.putFile(uri)
         .addOnSuccessListener { function() }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
 
 inline fun initUser(crossinline function: () -> Unit) {
-    REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
+    REF_DATABASE_ROOT.child(NODE_USERS).child(
+        CURRENT_UID
+    )
         .addListenerForSingleValueEvent(AppValueEventListener {
-            USER = it.getValue(User::class.java) ?: User()
-            if (USER.username.isEmpty()){
-                USER.username = CURRENT_UID
+            USER = it.getValue(UserModel::class.java) ?: UserModel()
+            if (USER.username.isEmpty()) {
+                USER.username =
+                    CURRENT_UID
             }
             function()
         })
+}
+
+fun initContacts() {
+    if (checkPermission(READ_CONTACTS)) {
+        var arrayContacts = arrayListOf<CommonModel>()
+        var cursor = APP_ACTIVITY.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        cursor?.let {
+            while (it.moveToNext()) {
+                val fullName =
+                    it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+                val phone =
+                    it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                val newModel = CommonModel()
+                newModel.fullname = fullName
+                newModel.phone = phone.replace(Regex("[\\s, -]"), "")
+                arrayContacts.add(newModel)
+            }
+        }
+        cursor?.close()
+        updatePhonesToDatabase(arrayContacts)
+    }
+}
+
+fun String.asTime(): String {
+    val time = Date(this.toLong())
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return timeFormat.format(time)
 }
