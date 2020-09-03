@@ -1,4 +1,4 @@
-package com.example.telegram.ui.fragments.mesage_recycle_view.views
+package com.example.telegram.ui.mesage_recycle_view.views
 
 interface MesageView {
     val id: String
@@ -12,6 +12,9 @@ interface MesageView {
             get() = 0
         val MESAGE_TEXT: Int
             get() = 1
+        val MESAGE_VOICE: Int
+            get() = 2
+
     }
 
     fun getTypeView(): Int

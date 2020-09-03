@@ -1,4 +1,4 @@
-package com.example.telegram.ui.fragments.mesage_recycle_view.views
+package com.example.telegram.ui.mesage_recycle_view.views
 
 data class ViewImageMesage(
     override val id: String,

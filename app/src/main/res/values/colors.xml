@@ -7,6 +7,7 @@
     <color name="colorAccentDark">#EAE7E7</color>
     <color name="colorBlack">#000000</color>
     <color name="colorGreen">#9ECC98</color>
+    <color name="colorGreenDark">#588551</color>
     <color name="colorGrey">#9E9797</color>
 
     <!-- Material DEFAULT colors -->

@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.storage.FirebaseStorage
+import java.io.File
 import java.util.ArrayList
 
 fun initFirebase() {
@@ -148,4 +149,10 @@ fun uploadFileToStorage(uri: Uri, mesageKey: String, receivedID: String, typeMes
             sendMesageAsFile(receivedID, it, mesageKey, typeMesage)
         }
     }
+}
+
+fun getFileFromStorage(mFile: File, fileUrl: String, function: () -> Unit) {
+    val path = REF_STORAGE_ROOT.storage.getReferenceFromUrl(fileUrl)
+    path.getFile(mFile).addOnSuccessListener { function() }
+        .addOnFailureListener{ showToast(it.message.toString())}
 }

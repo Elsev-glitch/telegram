@@ -1,4 +1,4 @@
-package com.example.telegram.ui.fragments.single_chat
+package com.example.telegram.ui.screens.single_chat
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,12 +15,15 @@ import com.example.telegram.R
 import com.example.telegram.database.*
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
-import com.example.telegram.ui.fragments.BaseFragment
-import com.example.telegram.ui.fragments.mesage_recycle_view.views.AppViewFactory
+import com.example.telegram.ui.mesage_recycle_view.views.AppViewFactory
+import com.example.telegram.ui.screens.BaseFragment
 import com.example.telegram.utils.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DatabaseReference
 import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.choice_upload.*
 import kotlinx.android.synthetic.main.fragment_single_chat.*
 import kotlinx.android.synthetic.main.toolbar_info.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +46,7 @@ class SingleChatFragment(private val contact: CommonModel) :
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var mAppVoiceRecorder: AppVoiceRecorder
+    private lateinit var mBottomSheetBehavior: BottomSheetBehavior<*>
 
     override fun onResume() {
         super.onResume()
@@ -56,6 +60,8 @@ class SingleChatFragment(private val contact: CommonModel) :
         mSwipeRefreshLayout = chat_swipe_refresh
         mLayoutManager = LinearLayoutManager(this.context)
         mAppVoiceRecorder = AppVoiceRecorder()
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_choice)
+        mBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         // Включение выключение кнопки отправить, скрепка, звук в зависимости от содержимого в EditText
         chat_input_message.addTextChangedListener(AppTextWatcher {
@@ -72,24 +78,34 @@ class SingleChatFragment(private val contact: CommonModel) :
         })
 
         // Нажатие на кнопку скрепка
-        chat_btn_attach.setOnClickListener { attachFile() }
+        chat_btn_attach.setOnClickListener { attach() }
 
         // Запись звука в чате
         CoroutineScope(Dispatchers.IO).launch {
             chat_btn_voice.setOnTouchListener { view, motionEvent ->
-                if (checkPermission(RECORD_AUDIO)){
-                    if (motionEvent.action == MotionEvent.ACTION_DOWN){ // Кнопка запись звука нажата
+                if (checkPermission(RECORD_AUDIO)) {
+                    if (motionEvent.action == MotionEvent.ACTION_DOWN) { // Кнопка запись звука нажата
                         // record
                         chat_input_message.setText("запись")
-                        chat_btn_voice.setColorFilter(ContextCompat.getColor(APP_ACTIVITY, R.color.primary))
+                        chat_btn_voice.setColorFilter(
+                            ContextCompat.getColor(
+                                APP_ACTIVITY,
+                                R.color.primary
+                            )
+                        )
                         val mesageKey = getMesageKey(contact.id)
                         mAppVoiceRecorder.startRecord(mesageKey)
-                    } else if (motionEvent.action == MotionEvent.ACTION_UP){ // Кнопка запись звука отжат
+                    } else if (motionEvent.action == MotionEvent.ACTION_UP) { // Кнопка запись звука отжат
                         // stop record
                         chat_input_message.setText("")
                         chat_btn_voice.colorFilter = null
-                        mAppVoiceRecorder.stopRecord{ file, mesageKey ->
-                            uploadFileToStorage(Uri.fromFile(file), mesageKey, contact.id, TYPE_MESAGE_VOICE)
+                        mAppVoiceRecorder.stopRecord { file, mesageKey ->
+                            uploadFileToStorage(
+                                Uri.fromFile(file),
+                                mesageKey,
+                                contact.id,
+                                TYPE_MESAGE_VOICE
+                            )
                             mSmoothScrollToPosition = true
                         }
                     }
@@ -99,8 +115,20 @@ class SingleChatFragment(private val contact: CommonModel) :
         }
     }
 
-    // Функции после нажатия кнопки скрепка
+    private fun attach() {
+        mBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        btn_attach_image.setOnClickListener { attachImage() }
+        btn_attach_file.setOnClickListener { attachFile() }
+    }
+
     private fun attachFile() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
+    }
+
+    // Функции после нажатия кнопки картинка
+    private fun attachImage() {
         CropImage.activity()
             .setAspectRatio(1, 1)
             .setRequestedSize(400, 400)
@@ -195,11 +223,21 @@ class SingleChatFragment(private val contact: CommonModel) :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val uri = CropImage.getActivityResult(data).uri
-            val mesageKey = getMesageKey(contact.id)
-            uploadFileToStorage(uri, mesageKey, contact.id, TYPE_MESAGE_IMAGE)
-            mSmoothScrollToPosition = true
+        if (data != null) {
+            when (requestCode) {
+                CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
+                    val uri = CropImage.getActivityResult(data).uri
+                    val mesageKey = getMesageKey(contact.id)
+                    uploadFileToStorage(uri, mesageKey, contact.id, TYPE_MESAGE_IMAGE)
+                    mSmoothScrollToPosition = true
+                }
+                PICK_FILE_REQUEST_CODE -> {
+                    val uri = data?.data
+                    val mesageKey = getMesageKey(contact.id)
+                    uri?.let { uploadFileToStorage(it, mesageKey, contact.id, TYPE_MESAGE_FILE) }
+                    mSmoothScrollToPosition = true
+                }
+            }
         }
     }
 
@@ -213,5 +251,6 @@ class SingleChatFragment(private val contact: CommonModel) :
     override fun onDestroyView() {
         super.onDestroyView()
         mAppVoiceRecorder.releaseRecorder()
+        mAdapter.destroy()
     }
 }

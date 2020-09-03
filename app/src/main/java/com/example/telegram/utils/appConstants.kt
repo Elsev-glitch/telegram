@@ -6,3 +6,6 @@ lateinit var APP_ACTIVITY: MainActivity
 const val TYPE_MESAGE_IMAGE = "image"
 const val TYPE_TEXT = "text"
 const val TYPE_MESAGE_VOICE = "voice"
+const val TYPE_MESAGE_FILE = "file"
+
+const val PICK_FILE_REQUEST_CODE = 301
