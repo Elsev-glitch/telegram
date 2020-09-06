@@ -1,11 +1,9 @@
 package com.example.telegram.ui.screens.single_chat
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.AbsListView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +15,7 @@ import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.ui.mesage_recycle_view.views.AppViewFactory
 import com.example.telegram.ui.screens.BaseFragment
+import com.example.telegram.ui.screens.main_list.MainListFragment
 import com.example.telegram.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DatabaseReference
@@ -62,6 +61,7 @@ class SingleChatFragment(private val contact: CommonModel) :
         mAppVoiceRecorder = AppVoiceRecorder()
         mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_choice)
         mBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        setHasOptionsMenu(true)
 
         // Включение выключение кнопки отправить, скрепка, звук в зависимости от содержимого в EditText
         chat_input_message.addTextChangedListener(AppTextWatcher {
@@ -208,6 +208,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                 contact.id,
                 TYPE_TEXT
             ) {
+                saveToMainList(contact.id, TYPE_CHAT)
                 chat_input_message.setText("")
             }
         }
@@ -232,9 +233,10 @@ class SingleChatFragment(private val contact: CommonModel) :
                     mSmoothScrollToPosition = true
                 }
                 PICK_FILE_REQUEST_CODE -> {
-                    val uri = data?.data
+                    val uri = data.data
                     val mesageKey = getMesageKey(contact.id)
-                    uri?.let { uploadFileToStorage(it, mesageKey, contact.id, TYPE_MESAGE_FILE) }
+                    val fileName = getFileNameFromUri(uri!!)
+                    uploadFileToStorage(uri, mesageKey, contact.id, TYPE_MESAGE_FILE, fileName)
                     mSmoothScrollToPosition = true
                 }
             }
@@ -252,5 +254,23 @@ class SingleChatFragment(private val contact: CommonModel) :
         super.onDestroyView()
         mAppVoiceRecorder.releaseRecorder()
         mAdapter.destroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        activity?.menuInflater?.inflate(R.menu.singl_chat_action_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_clear_chat -> clearChat(contact.id){
+                showToast("Чат очищен")
+                replaceFragment(MainListFragment())
+            }
+            R.id.menu_delete_chat -> deleteChat(contact.id){
+                showToast("Чат удален")
+                replaceFragment(MainListFragment())
+            }
+        }
+        return true
     }
 }

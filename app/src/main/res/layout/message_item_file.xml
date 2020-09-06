@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bloc_receive_voice_message"
+        android:id="@+id/bloc_receive_file_message"
         android:layout_width="@dimen/chat_common_width"
         android:layout_height="@dimen/chat_common_height"
         app:layout_constraintTop_toTopOf="parent"
@@ -15,28 +15,29 @@
         android:layout_margin="@dimen/small_margin">
         
         <ImageView
-            android:id="@+id/chat_btn_receive_play"
+            android:id="@+id/chat_btn_receive_file"
             android:layout_width="@dimen/chat_btn_width"
             android:layout_height="@dimen/chat_btn_height"
-            android:src="@drawable/ic_play_blue"
+            android:src="@drawable/ic_attach_file"
             android:layout_marginStart="@dimen/small_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="@dimen/small_margin"/>
 
-        <ImageView
-            android:id="@+id/chat_btn_receive_stop"
-            android:layout_width="@dimen/chat_btn_width"
-            android:layout_height="@dimen/chat_btn_height"
-            android:src="@drawable/ic_stop_blue"
-            android:layout_marginStart="@dimen/small_margin"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-        
         <TextView
-            android:id="@+id/chat_receive_voice_time"
+            android:maxLines="2"
+            android:id="@+id/chat_receive_filename"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/chat_btn_receive_file"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/chat_receive_file_time"
+            android:layout_margin="@dimen/small_margin" />
+
+        <TextView
+            android:id="@+id/chat_receive_file_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorGrey"
@@ -46,10 +47,21 @@
             tools:text="12:00"
             android:layout_marginEnd="@dimen/small_margin"/>
 
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/chat_receive_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="@dimen/chat_btn_width"
+            android:layout_height="@dimen/chat_btn_height"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bloc_user_voice_message"
+        android:id="@+id/bloc_user_file_message"
         android:layout_width="@dimen/chat_common_width"
         android:layout_height="@dimen/chat_common_height"
         app:layout_constraintTop_toTopOf="parent"
@@ -58,28 +70,29 @@
         android:layout_margin="@dimen/small_margin">
 
         <ImageView
-            android:id="@+id/chat_btn_user_play"
+            android:id="@+id/chat_btn_user_file"
             android:layout_width="@dimen/chat_btn_width"
             android:layout_height="@dimen/chat_btn_height"
-            android:src="@drawable/ic_play_green"
+            android:src="@drawable/ic_file_green"
             android:layout_marginStart="@dimen/small_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageView
-            android:id="@+id/chat_btn_user_stop"
-            android:layout_width="@dimen/chat_btn_width"
-            android:layout_height="@dimen/chat_btn_height"
-            android:src="@drawable/ic_stop_green"
-            android:layout_marginStart="@dimen/small_margin"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="@dimen/small_margin"/>
 
         <TextView
-            android:id="@+id/chat_user_voice_time"
+            android:maxLines="2"
+            android:id="@+id/chat_user_filename"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/chat_btn_user_file"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/chat_user_file_time"
+            android:layout_margin="@dimen/small_margin"/>
+
+        <TextView
+            android:id="@+id/chat_user_file_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorGreenDark"
@@ -88,6 +101,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="12:00"
             android:layout_marginEnd="@dimen/small_margin"/>
+
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/chat_user_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="@dimen/chat_btn_width"
+            android:layout_height="@dimen/chat_btn_height"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
