@@ -2,7 +2,7 @@ package com.example.telegram.ui.settigs
 
 import com.example.telegram.R
 import com.example.telegram.database.*
-import com.example.telegram.ui.screens.BaseChangeFragment
+import com.example.telegram.ui.screens.base.BaseChangeFragment
 import com.example.telegram.utils.*
 import kotlinx.android.synthetic.main.fragment_change_name.*
 

@@ -1,4 +1,4 @@
-package com.example.telegram.ui.screens
+package com.example.telegram.ui.screens.contacts
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.telegram.R
 import com.example.telegram.database.*
 import com.example.telegram.models.CommonModel
+import com.example.telegram.ui.screens.base.BaseFragment
 import com.example.telegram.ui.screens.single_chat.SingleChatFragment
 import com.example.telegram.utils.*
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -42,7 +43,9 @@ class ContactsFragment : BaseFragment(R.layout.fragment_contacts) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsHolder {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.contact_item, parent, false)
-                return ContactsHolder(view)
+                return ContactsHolder(
+                    view
+                )
             }
 
             override fun onBindViewHolder(

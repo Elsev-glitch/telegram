@@ -196,3 +196,48 @@ fun clearChat(id: String, function: () -> Unit) {
         }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
+fun createGroupToDatabase(nameGroup: String, uri: Uri, listContacts: List<CommonModel>, function: () -> Unit) {
+    val keyGroup = REF_DATABASE_ROOT.child(NODE_GROUPS).push().key.toString()
+    val path = REF_DATABASE_ROOT.child(NODE_GROUPS).child(keyGroup)
+    val mapData = hashMapOf<String, Any>()
+    val pathStorage = REF_STORAGE_ROOT.child(FOLDER_GROUPS_IMAGE).child(keyGroup)
+
+    mapData[CHILD_ID] = keyGroup
+    mapData[CHILD_FULLNAME] = nameGroup
+
+    val mapMembers = hashMapOf<String, Any>()
+    listContacts.forEach {
+        mapMembers[it.id] = USER_MEMBER
+    }
+    mapMembers[CURRENT_UID] = USER_CREATOR
+
+    mapData[NODE_MEMBERS] = mapMembers
+    path.updateChildren(mapData)
+        .addOnSuccessListener {
+            if (uri != Uri.EMPTY){
+                putFileToStorage(uri, pathStorage) {
+                    getUrlFromStorage(pathStorage) {
+                        path.child(CHILD_FILE_URL).setValue(it)
+                    }
+                }
+            }
+            addGroupsToMainList(mapData, listContacts){
+                function()
+            }
+        }
+        .addOnFailureListener { showToast(it.message.toString())}
+}
+
+fun addGroupsToMainList(mapData: HashMap<String, Any>, listContacts: List<CommonModel>, function: () -> Unit) {
+    val path = REF_DATABASE_ROOT.child(NODE_MAIN_LIST)
+    val map = hashMapOf<String, Any>()
+
+    map[CHILD_ID] = mapData[CHILD_ID].toString()
+    map[CHILD_TYPE] = TYPE_GROUP
+    listContacts.forEach {
+        path.child(it.id).child(map[CHILD_ID].toString()).updateChildren(map)
+    }
+    path.child(CURRENT_UID).child(map[CHILD_ID].toString()).updateChildren(map)
+        .addOnSuccessListener { function() }
+        .addOnFailureListener { showToast(it.message.toString()) }
+}
